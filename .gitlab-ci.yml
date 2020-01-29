@@ -1,9 +1,9 @@
 ".agent_build_common_deb":
-  "artifacts": &id010
+  "artifacts": &id009
     "expire_in": "2 weeks"
     "paths":
     - "$OMNIBUS_PACKAGE_DIR"
-  "script": &id011
+  "script": &id010
   - "echo \"About to build for $RELEASE_VERSION\""
   - "rm -rf $OMNIBUS_PACKAGE_DIR/*"
   - "inv -e agent.omnibus-build --release-version \"$RELEASE_VERSION\" --major-version\
@@ -13,11 +13,11 @@
   - "mkdir -p $OMNIBUS_PACKAGE_DIR && cp $OMNIBUS_BASE_DIR/pkg/datadog-agent*_${PACKAGE_ARCH}.deb{,.metadata.json}\
     \ $OMNIBUS_PACKAGE_DIR"
 ".agent_build_common_rpm":
-  "artifacts": &id012
+  "artifacts": &id011
     "expire_in": "2 weeks"
     "paths":
     - "$OMNIBUS_PACKAGE_DIR"
-  "script": &id013
+  "script": &id012
   - "echo \"About to build for $RELEASE_VERSION\""
   - "rm -rf $OMNIBUS_PACKAGE_DIR/*"
   - "set +x"
@@ -37,11 +37,11 @@
   - "mkdir -p $OMNIBUS_PACKAGE_DIR && cp $OMNIBUS_BASE_DIR/pkg/*.{rpm,metadata.json}\
     \ $OMNIBUS_PACKAGE_DIR"
 ".agent_build_common_suse_rpm":
-  "artifacts": &id014
+  "artifacts": &id013
     "expire_in": "2 weeks"
     "paths":
     - "$OMNIBUS_PACKAGE_DIR_SUSE"
-  "script": &id015
+  "script": &id014
   - "echo \"About to build for $RELEASE_VERSION\""
   - "rm -rf $OMNIBUS_PACKAGE_DIR_SUSE/*"
   - "set +x"
@@ -85,31 +85,25 @@
   "SRC_DCA": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/cluster-agent"
   "SRC_DSD": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent/dogstatsd"
 ".kitchen_agent_a6":
-  "artifacts": &id001
-    "expire_in": "2 weeks"
-    "paths":
-    - "$CI_PROJECT_DIR/kitchen_logs"
-    "when": "always"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": &id002
+  "tags": &id001
   - "runner:main"
   - "size:large"
-  "variables": &id004
+  "variables": &id003
     "AGENT_MAJOR_VERSION": !!int "6"
     "DD_PIPELINE_ID": "$CI_PIPELINE_ID-a6"
 ".kitchen_agent_a7":
-  "artifacts": *id001
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": &id005
+  "tags": *id001
+  "variables": &id004
     "AGENT_MAJOR_VERSION": !!int "7"
     "DD_PIPELINE_ID": "$CI_PIPELINE_ID-a7"
 ".kitchen_cleanup_s3_common":
-  "script": &id023
+  "script": &id022
   - "aws s3 rm s3://$DEB_TESTING_S3_BUCKET/dists/pipeline-$DD_PIPELINE_ID --recursive"
   - "aws s3 rm s3://$RPM_TESTING_S3_BUCKET/pipeline-$DD_PIPELINE_ID --recursive"
   - "aws s3 rm s3://$RPM_TESTING_S3_BUCKET/suse/pipeline-$DD_PIPELINE_ID --recursive"
@@ -118,13 +112,12 @@
   - "for deb in $(ls *amd64.deb); do aws s3 rm s3://$DEB_TESTING_S3_BUCKET/pool/d/da/$deb\
     \ --recursive; done"
 ".kitchen_common":
-  "artifacts": *id001
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
+  "tags": *id001
 ".kitchen_os_centos":
-  "before_script": &id003
+  "before_script": &id002
   - "rsync -azr --delete ./ $SRC_PATH"
   - "export TEST_PLATFORMS=\"centos-69,urn,OpenLogic:CentOS:6.9:6.9.20180530\""
   - "export TEST_PLATFORMS=\"$TEST_PLATFORMS|centos-76,urn,OpenLogic:CentOS:7.6:7.6.20190402\""
@@ -132,7 +125,7 @@
   - "cd $DD_AGENT_TESTING_DIR"
   - "bash -l tasks/kitchen_setup.sh"
 ".kitchen_os_debian":
-  "before_script": &id006
+  "before_script": &id005
   - "rsync -azr --delete ./ $SRC_PATH"
   - "export TEST_PLATFORMS=\"debian-8,urn,credativ:Debian:8:8.20190313.0\""
   - "export TEST_PLATFORMS=\"$TEST_PLATFORMS|debian-9,urn,credativ:Debian:9:9.20190515.0\""
@@ -140,7 +133,7 @@
   - "cd $DD_AGENT_TESTING_DIR"
   - "bash -l tasks/kitchen_setup.sh"
 ".kitchen_os_suse":
-  "before_script": &id007
+  "before_script": &id006
   - "rsync -azr --delete ./ $SRC_PATH"
   - "export TEST_PLATFORMS=\"sles-11,id,/subscriptions/8c56d827-5f07-45ce-8f2b-6c5001db5c6f/resourceGroups/kitchen-test-images/providers/Microsoft.Compute/galleries/kitchenimages/images/SLES-11-SP4/versions/1.0.0\""
   - "export TEST_PLATFORMS=\"$TEST_PLATFORMS|sles-12,urn,SUSE:SLES:12-SP4:2019.06.17\""
@@ -148,7 +141,7 @@
   - "cd $DD_AGENT_TESTING_DIR"
   - "bash -l tasks/kitchen_setup.sh"
 ".kitchen_os_ubuntu":
-  "before_script": &id008
+  "before_script": &id007
   - "rsync -azr --delete ./ $SRC_PATH"
   - "export TEST_PLATFORMS=\"ubuntu-14-04,urn,Canonical:UbuntuServer:14.04.5-LTS:14.04.201905140\""
   - "export TEST_PLATFORMS=\"$TEST_PLATFORMS|ubuntu-16-04,urn,Canonical:UbuntuServer:16.04.0-LTS:16.04.201906170\""
@@ -156,7 +149,7 @@
   - "cd $DD_AGENT_TESTING_DIR"
   - "bash -l tasks/kitchen_setup.sh"
 ".kitchen_os_windows":
-  "before_script": &id009
+  "before_script": &id008
   - "if [ $AGENT_MAJOR_VERSION == \"7\" ]; then export WINDOWS_TESTING_S3_BUCKET=$WINDOWS_TESTING_S3_BUCKET_A7;\
     \ else export WINDOWS_TESTING_S3_BUCKET=$WINDOWS_TESTING_S3_BUCKET_A6; fi"
   - "rsync -azr --delete ./ $SRC_PATH"
@@ -168,128 +161,168 @@
   - "cd $DD_AGENT_TESTING_DIR"
   - "bash -l tasks/kitchen_setup.sh"
 ".kitchen_scenario_centos_a6":
-  "artifacts": *id001
-  "before_script": *id003
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a6"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 ".kitchen_scenario_centos_a7":
-  "artifacts": *id001
-  "before_script": *id003
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a7"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 ".kitchen_scenario_debian_a6":
-  "artifacts": *id001
-  "before_script": *id006
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 ".kitchen_scenario_debian_a7":
-  "artifacts": *id001
-  "before_script": *id006
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 ".kitchen_scenario_suse_a6":
-  "artifacts": *id001
-  "before_script": *id007
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a6"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 ".kitchen_scenario_suse_a7":
-  "artifacts": *id001
-  "before_script": *id007
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a7"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 ".kitchen_scenario_ubuntu_a6":
-  "artifacts": *id001
-  "before_script": *id008
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 ".kitchen_scenario_ubuntu_a7":
-  "artifacts": *id001
-  "before_script": *id008
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 ".kitchen_scenario_windows_a6":
-  "artifacts": *id001
-  "before_script": *id009
+  "before_script": *id008
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a6"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 ".kitchen_scenario_windows_a7":
-  "artifacts": *id001
-  "before_script": *id009
+  "before_script": *id008
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a7"
   "retry": !!int "1"
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 ".kitchen_test_chef":
-  "script": &id016
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "script": &id015
+  - "apt update && apt install procps tcpdump net-tools || true"
+  - "tcpdump -D || true"
+  - "ifconfig || true"
+  - "whoami"
+  - "mkdir -p $OMNIBUS_PACKAGE_DIR"
+  - "tcpdump -w $OMNIBUS_PACKAGE_DIR/0001.pcap -i any &"
   - "AZURE_LOCATION='North Central US' bash -l tasks/run-test-kitchen.sh chef-test\
     \ $AGENT_MAJOR_VERSION"
+  - "pkill tcpdump"
 ".kitchen_test_install_script":
-  "script": &id017
+  "script": &id016
+  - "apt update && apt install procps tcpdump net-tools || true"
+  - "tcpdump -D || true"
+  - "whoami"
+  - "ifconfig || true"
+  - "mkdir -p $OMNIBUS_PACKAGE_DIR"
+  - "tcpdump -w $OMNIBUS_PACKAGE_DIR/0001.pcap -i any &"
   - "AZURE_LOCATION='South Central US' bash -l tasks/run-test-kitchen.sh install-script-test\
     \ $AGENT_MAJOR_VERSION"
+  - "pkill tcpdump"
 ".kitchen_test_step_by_step":
-  "script": &id018
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "script": &id017
+  - "apt update && apt install procps tcpdump net-tools || true"
+  - "tcpdump -D || true"
+  - "whoami"
+  - "ifconfig || true"
+  - "mkdir -p $OMNIBUS_PACKAGE_DIR"
+  - "tcpdump -w $OMNIBUS_PACKAGE_DIR/0001.pcap -i any &"
   - "AZURE_LOCATION='Central US' bash -l tasks/run-test-kitchen.sh step-by-step-test\
     \ $AGENT_MAJOR_VERSION"
+  - "pkill tcpdump"
 ".kitchen_test_upgrade5":
-  "script": &id019
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "script": &id018
+  - "apt update && apt install procps tcpdump net-tools || true"
+  - "tcpdump -D || true"
+  - "ifconfig || true"
+  - "whoami"
+  - "mkdir -p $OMNIBUS_PACKAGE_DIR"
+  - "tcpdump -w $OMNIBUS_PACKAGE_DIR/0001.pcap -i any &"
   - "AZURE_LOCATION='Central US' bash -l tasks/run-test-kitchen.sh upgrade5-test $AGENT_MAJOR_VERSION"
+  - "pkill tcpdump"
 ".kitchen_test_upgrade6":
-  "script": &id020
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "script": &id019
+  - "apt update && apt install procps tcpdump net-tools || true"
+  - "tcpdump -D || true"
+  - "ifconfig || true"
+  - "mkdir -p $OMNIBUS_PACKAGE_DIR"
+  - "tcpdump -w $OMNIBUS_PACKAGE_DIR/0001.pcap -i any &"
   - "AZURE_LOCATION='South Central US' bash -l tasks/run-test-kitchen.sh upgrade6-test\
     \ $AGENT_MAJOR_VERSION"
+  - "pkill tcpdump"
 ".kitchen_test_windows_installer":
-  "before_script": &id021
+  "before_script": &id020
   - "# noop"
-  "script": &id022
+  "script": &id021
   - "rsync -azr --delete ./ $SRC_PATH"
   - "export TEST_PLATFORMS=\"win2012,urn,MicrosoftWindowsServer:WindowsServer:2012-Datacenter:3.127.20190603\""
   - "cd $DD_AGENT_TESTING_DIR"
@@ -346,14 +379,14 @@
   - "runner:windows-docker"
   - "windowsversion:1809"
 "agent_deb-x64-a6":
-  "artifacts": *id010
+  "artifacts": *id009
   "before_script":
   - "source /root/.bashrc && conda activate $CONDA_ENV"
   - "inv -e deps --verbose --dep-vendor-only"
   - "export RELEASE_VERSION=$RELEASE_VERSION_6"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/deb_x64:$DATADOG_AGENT_BUILDIMAGES"
   "needs": []
-  "script": *id011
+  "script": *id010
   "stage": "package_build"
   "tags":
   - "runner:main"
@@ -367,14 +400,14 @@
     "PACKAGE_ARCH": "amd64"
     "PYTHON_RUNTIMES": "2,3"
 "agent_deb-x64-a7":
-  "artifacts": *id010
+  "artifacts": *id009
   "before_script":
   - "source /root/.bashrc && conda activate $CONDA_ENV"
   - "inv -e deps --verbose --dep-vendor-only"
   - "export RELEASE_VERSION=$RELEASE_VERSION_7"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/deb_x64:$DATADOG_AGENT_BUILDIMAGES"
   "needs": []
-  "script": *id011
+  "script": *id010
   "stage": "package_build"
   "tags":
   - "runner:main"
@@ -388,14 +421,14 @@
     "PACKAGE_ARCH": "amd64"
     "PYTHON_RUNTIMES": "3"
 "agent_rpm-x64-a6":
-  "artifacts": *id012
+  "artifacts": *id011
   "before_script":
   - "source /root/.bashrc && conda activate $CONDA_ENV"
   - "inv -e deps --verbose --dep-vendor-only"
   - "export RELEASE_VERSION=$RELEASE_VERSION_6"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/rpm_x64:$DATADOG_AGENT_BUILDIMAGES"
   "needs": []
-  "script": *id013
+  "script": *id012
   "stage": "package_build"
   "tags":
   - "runner:main"
@@ -406,14 +439,14 @@
     "CONDA_ENV": "ddpy3"
     "PYTHON_RUNTIMES": "2,3"
 "agent_rpm-x64-a7":
-  "artifacts": *id012
+  "artifacts": *id011
   "before_script":
   - "source /root/.bashrc && conda activate $CONDA_ENV"
   - "inv -e deps --verbose --dep-vendor-only"
   - "export RELEASE_VERSION=$RELEASE_VERSION_7"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-buildimages/rpm_x64:$DATADOG_AGENT_BUILDIMAGES"
   "needs": []
-  "script": *id013
+  "script": *id012
   "stage": "package_build"
   "tags":
   - "runner:main"
@@ -424,13 +457,13 @@
     "CONDA_ENV": "ddpy3"
     "PYTHON_RUNTIMES": "3"
 "agent_suse-x64-a6":
-  "artifacts": *id014
+  "artifacts": *id013
   "before_script":
   - "export RELEASE_VERSION=$RELEASE_VERSION_6"
   - "inv -e deps --verbose --dep-vendor-only"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/suse_x64:$DATADOG_AGENT_BUILDERS"
   "needs": []
-  "script": *id015
+  "script": *id014
   "stage": "package_build"
   "tags":
   - "runner:main"
@@ -440,13 +473,13 @@
     "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI": "/credentials"
     "PYTHON_RUNTIMES": "2,3"
 "agent_suse-x64-a7":
-  "artifacts": *id014
+  "artifacts": *id013
   "before_script":
   - "export RELEASE_VERSION=$RELEASE_VERSION_7"
   - "inv -e deps --verbose --dep-vendor-only"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/suse_x64:$DATADOG_AGENT_BUILDERS"
   "needs": []
-  "script": *id015
+  "script": *id014
   "stage": "package_build"
   "tags":
   - "runner:main"
@@ -652,580 +685,712 @@
 "include": "https://gitlab-templates.ddbuild.io/slack-notifier/v1/template.yml"
 "kitchen_centos_chef-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_centos_chef-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_centos_install_script-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id017
+  "script": *id016
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_centos_install_script-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id017
+  "script": *id016
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_centos_step_by_step-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id018
+  "script": *id017
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_centos_step_by_step-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id018
+  "script": *id017
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_centos_upgrade5-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_centos_upgrade5-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_centos_upgrade6-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id020
+  "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_centos_upgrade6-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id003
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id002
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id020
+  "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_debian_chef-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_debian_chef-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_debian_install_script-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id017
+  "script": *id016
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_debian_install_script-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
-  "script": *id017
+  "script": *id016
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_debian_step_by_step-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id018
+  "script": *id017
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_debian_step_by_step-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
-  "script": *id018
+  "script": *id017
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_debian_upgrade5-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_debian_upgrade5-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_debian_upgrade6-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id006
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id020
+  "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_debian_upgrade6-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id005
+  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
+  "needs":
+  - "deploy_deb_testing-a7"
+  "retry": !!int "1"
+  "script": *id019
+  "stage": "testkitchen_testing"
+  "tags": *id001
+  "variables": *id004
+"kitchen_suse_chef-a6":
+  "allow_failure": !!bool "false"
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
   "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
-  - "deploy_deb_testing-a7"
-  "retry": !!int "1"
-  "script": *id020
-  "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
-"kitchen_suse_chef-a6":
-  "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
-  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
-  "needs":
   - "deploy_suse_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_chef-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_install_script-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id017
+  "script": *id016
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_install_script-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id017
+  "script": *id016
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_step_by_step-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id018
+  "script": *id017
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_step_by_step-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id018
+  "script": *id017
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_upgrade5-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_upgrade5-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_upgrade6-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a6"
   "retry": !!int "1"
-  "script": *id020
+  "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_suse_upgrade6-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id007
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id006
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_suse_rpm_testing-a7"
   "retry": !!int "1"
-  "script": *id020
+  "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_ubuntu_chef-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_ubuntu_chef-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_ubuntu_install_script-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id017
+  "script": *id016
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_ubuntu_install_script-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "before_script": *id007
+  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
+  "needs":
+  - "deploy_deb_testing-a7"
+  "retry": !!int "1"
+  "script": *id016
+  "stage": "testkitchen_testing"
+  "tags": *id001
+  "variables": *id004
+"kitchen_ubuntu_step_by_step-a6":
+  "allow_failure": !!bool "false"
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
+  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
+  "needs":
+  - "deploy_deb_testing-a6"
+  "retry": !!int "1"
+  "script": *id017
+  "stage": "testkitchen_testing"
+  "tags": *id001
+  "variables": *id003
+"kitchen_ubuntu_step_by_step-a7":
+  "allow_failure": !!bool "false"
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
   "script": *id017
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
-"kitchen_ubuntu_step_by_step-a6":
-  "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
-  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
-  "needs":
-  - "deploy_deb_testing-a6"
-  "retry": !!int "1"
-  "script": *id018
-  "stage": "testkitchen_testing"
-  "tags": *id002
+  "tags": *id001
   "variables": *id004
-"kitchen_ubuntu_step_by_step-a7":
-  "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
-  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
-  "needs":
-  - "deploy_deb_testing-a7"
-  "retry": !!int "1"
-  "script": *id018
-  "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
 "kitchen_ubuntu_upgrade5-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_ubuntu_upgrade5-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_ubuntu_upgrade6-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a6"
   "retry": !!int "1"
-  "script": *id020
+  "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_ubuntu_upgrade6-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id008
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id007
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_deb_testing-a7"
   "retry": !!int "1"
-  "script": *id020
+  "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_windows_chef-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id009
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id008
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a6"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_windows_chef-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id009
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id008
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a7"
   "retry": !!int "1"
-  "script": *id016
+  "script": *id015
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_windows_installer-a6":
   "allow_failure": !!bool "true"
-  "artifacts": *id001
-  "before_script": *id021
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id020
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a6"
   "retry": !!int "0"
-  "script": *id022
+  "script": *id021
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_windows_installer-a7":
   "allow_failure": !!bool "true"
-  "artifacts": *id001
-  "before_script": *id021
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id020
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a7"
   "retry": !!int "0"
-  "script": *id022
+  "script": *id021
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
+  "tags": *id001
+  "variables": *id004
 "kitchen_windows_upgrade5-a6":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id009
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id008
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a6"
   "retry": !!int "1"
-  "script": *id019
+  "script": *id018
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id004
+  "tags": *id001
+  "variables": *id003
 "kitchen_windows_upgrade5-a7":
   "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id009
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id008
+  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
+  "needs":
+  - "deploy_windows_testing-a7"
+  "retry": !!int "1"
+  "script": *id018
+  "stage": "testkitchen_testing"
+  "tags": *id001
+  "variables": *id004
+"kitchen_windows_upgrade6-a6":
+  "allow_failure": !!bool "false"
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id008
+  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
+  "needs":
+  - "deploy_windows_testing-a6"
+  "retry": !!int "1"
+  "script": *id019
+  "stage": "testkitchen_testing"
+  "tags": *id001
+  "variables": *id003
+"kitchen_windows_upgrade6-a7":
+  "allow_failure": !!bool "false"
+  "artifacts":
+    "expire_in": "2 weeks"
+    "paths":
+    - "$OMNIBUS_PACKAGE_DIR"
+  "before_script": *id008
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
   "needs":
   - "deploy_windows_testing-a7"
   "retry": !!int "1"
   "script": *id019
   "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
-"kitchen_windows_upgrade6-a6":
-  "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id009
-  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
-  "needs":
-  - "deploy_windows_testing-a6"
-  "retry": !!int "1"
-  "script": *id020
-  "stage": "testkitchen_testing"
-  "tags": *id002
+  "tags": *id001
   "variables": *id004
-"kitchen_windows_upgrade6-a7":
-  "allow_failure": !!bool "false"
-  "artifacts": *id001
-  "before_script": *id009
-  "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/dd-agent-testing:$DATADOG_AGENT_BUILDERS"
-  "needs":
-  - "deploy_windows_testing-a7"
-  "retry": !!int "1"
-  "script": *id020
-  "stage": "testkitchen_testing"
-  "tags": *id002
-  "variables": *id005
 "stages":
 - "package_build"
 - "testkitchen_deploy"
@@ -1266,7 +1431,7 @@
   "before_script":
   - "ls"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/deploy:$DATADOG_AGENT_BUILDERS"
-  "script": *id023
+  "script": *id022
   "stage": "testkitchen_cleanup"
   "tags":
   - "runner:main"
@@ -1279,7 +1444,7 @@
   "before_script":
   - "ls"
   "image": "486234852809.dkr.ecr.us-east-1.amazonaws.com/ci/datadog-agent-builders/deploy:$DATADOG_AGENT_BUILDERS"
-  "script": *id023
+  "script": *id022
   "stage": "testkitchen_cleanup"
   "tags":
   - "runner:main"
