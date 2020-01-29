@@ -375,6 +375,11 @@ def make_kitchen_gitlab_yml(ctx):
     for k,v in data.items():
         if isinstance(v, dict) and v.get('stage', None) not in [None, 'package_build', 'testkitchen_deploy', 'testkitchen_testing', 'testkitchen_cleanup']:
             del data[k]
+            continue
+        for w in [ "dogstatsd", "puppy", "android", "buildpack", "dsd_msi", "msi_x86" ]:
+            if w in k:
+                del data[k]
+                continue
         if 'except' in v:
             del v['except']
         if 'only' in v:
@@ -387,6 +392,7 @@ def make_kitchen_gitlab_yml(ctx):
             extended = v['extends']
             if extended not in data:
                 del data[k]
+                continue
         if 'needs' in v:
             needed = v['needs']
             new_needed = []
