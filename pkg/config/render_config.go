@@ -36,6 +36,7 @@ type context struct {
 	ProcessAgent      bool
 	SystemProbe       bool
 	KubeApiServer     bool
+	CloudFoundry      bool
 	TraceAgent        bool
 	ClusterChecks     bool
 }
@@ -90,6 +91,7 @@ func mkContext(buildType string) context {
 			Common:        true,
 			Logging:       true,
 			KubeApiServer: true,
+			CloudFoundry:  false, // TODO: set to true when testing CF support
 			ClusterChecks: true,
 		}
 	}

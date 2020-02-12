@@ -1,26 +1,24 @@
 // Unless explicitly stated otherwise all files in this repository are licensed
 // under the Apache License Version 2.0.
 // This product includes software developed at Datadog (https://www.datadoghq.com/).
-// Copyright 2017-2020 Datadog, Inc.
+// Copyright 2016-2020 Datadog, Inc.
 
 // +build kubeapiserver
 
-package custommetrics
+package app
 
-import (
-	"context"
-	"github.com/DataDog/datadog-agent/pkg/clusteragent"
-)
+import "github.com/DataDog/datadog-agent/pkg/clusteragent"
 
-type RunServerFunc func(ctx context.Context) error
+type StartControllersFunc func() error
 
-func GetRunServerFunc(platform clusteragent.ClusterAgentPlatform) (RunServerFunc, error) {
+func GetStartControllersFunc(platform clusteragent.ClusterAgentPlatform) (StartControllersFunc, error) {
 	switch platform {
 	case clusteragent.PlatformCloudFoundry:
-		return runServerCloudFoundry, nil
+		return startControllersCloudFoundry, nil
 	case clusteragent.PlatformKubernetes:
-		return runServerKubernetes, nil
+		return startControllersKubernetes, nil
 	}
 
 	return nil, clusteragent.UnknownPlatformErr(platform)
 }
+

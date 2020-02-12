@@ -1445,3 +1445,14 @@ api_key:
 # cluster_name: <CLUSTER_IDENTIFIER>
 
 {{ end -}}
+{{- if .CloudFoundry }}
+
+#############################################
+## Cloud Foundry integration Configuration ##
+#############################################
+
+## @param cloudfoundry_bbs_api_url - string - optional - default: ""
+## Set URL of the BBS API.
+#
+# cloudfoundry_bbs_api_url: ""
+{{ end -}}

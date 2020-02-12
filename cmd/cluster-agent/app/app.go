@@ -18,11 +18,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes/scheme"
-	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	"k8s.io/client-go/tools/record"
-
 	"github.com/DataDog/datadog-agent/cmd/agent/common"
 	"github.com/DataDog/datadog-agent/cmd/cluster-agent/api"
 	"github.com/DataDog/datadog-agent/cmd/cluster-agent/custommetrics"
@@ -35,8 +30,6 @@ import (
 	"github.com/DataDog/datadog-agent/pkg/serializer"
 	"github.com/DataDog/datadog-agent/pkg/status/health"
 	"github.com/DataDog/datadog-agent/pkg/util"
-	"github.com/DataDog/datadog-agent/pkg/util/kubernetes/apiserver"
-	"github.com/DataDog/datadog-agent/pkg/util/kubernetes/apiserver/leaderelection"
 	"github.com/DataDog/datadog-agent/pkg/util/log"
 	"github.com/DataDog/datadog-agent/pkg/version"
 )
@@ -119,6 +112,16 @@ func start(cmd *cobra.Command, args []string) error {
 		logFile = ""
 	}
 
+	platform := clusteragent.GetClusterAgentPlatform()
+	runServer, err := custommetrics.GetRunServerFunc(platform)
+	if err != nil {
+		return err
+	}
+	startControllers, err := GetStartControllersFunc(platform)
+	if err != nil {
+		return err
+	}
+
 	mainCtx, mainCtxCancel := context.WithCancel(context.Background())
 	defer mainCtxCancel() // Calling cancel twice is safe
 
@@ -172,37 +175,10 @@ func start(cmd *cobra.Command, args []string) error {
 
 	log.Infof("Datadog Cluster Agent is now running.")
 
-	apiCl, err := apiserver.GetAPIClient() // make sure we can connect to the apiserver
+	err = startControllers()
 	if err != nil {
-		log.Errorf("Could not connect to the apiserver: %v", err)
-	} else {
-		le, err := leaderelection.GetLeaderEngine()
-		if err != nil {
-			return err
-		}
-
-		// Create event recorder
-		eventBroadcaster := record.NewBroadcaster()
-		eventBroadcaster.StartLogging(log.Infof)
-		eventBroadcaster.StartRecordingToSink(&corev1.EventSinkImpl{Interface: apiCl.Cl.CoreV1().Events("")})
-		eventRecorder := eventBroadcaster.NewRecorder(scheme.Scheme, v1.EventSource{Component: "datadog-cluster-agent"})
-
-		stopCh := make(chan struct{})
-		ctx := apiserver.ControllerContext{
-			InformerFactory:    apiCl.InformerFactory,
-			WPAClient:          apiCl.WPAClient,
-			WPAInformerFactory: apiCl.WPAInformerFactory,
-			Client:             apiCl.Cl,
-			LeaderElector:      le,
-			EventRecorder:      eventRecorder,
-			StopCh:             stopCh,
-		}
-
-		if err := apiserver.StartControllers(ctx); err != nil {
-			log.Errorf("Could not start controllers: %v", err)
-		}
+		return err
 	}
-
 	// Setup a channel to catch OS signals
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, os.Interrupt, syscall.SIGTERM)
@@ -240,7 +216,7 @@ func start(cmd *cobra.Command, args []string) error {
 		go func() {
 			defer wg.Done()
 
-			errServ := custommetrics.RunServer(mainCtx)
+			errServ := runServer(mainCtx)
 			if errServ != nil {
 				log.Errorf("Error in the External Metrics API Server: %v", errServ)
 			}

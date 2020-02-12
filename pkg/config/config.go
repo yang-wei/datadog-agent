@@ -353,6 +353,9 @@ func initConfig(config Config) {
 	config.BindEnvAndSetDefault("leader_election", false)
 	config.BindEnvAndSetDefault("kube_resources_namespace", "")
 
+	// Cloud Foundry BBS API
+	config.BindEnvAndSetDefault("cloudfoundry_bbs_api_url", "")
+
 	// Datadog cluster agent
 	config.BindEnvAndSetDefault("cluster_agent.enabled", false)
 	config.BindEnvAndSetDefault("cluster_agent.auth_token", "")
