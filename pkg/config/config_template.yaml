@@ -21,6 +21,19 @@ api_key:
 #
 # dd_url: https://app.datadoghq.com
 
+## @param cloud_provider - string - optional: <empty>
+## The cloud provider that the agent should scrape metadata from
+## Possible values are:
+## "ecs"     (AWS ECS/Fargate)
+## "ec2"     (AWS EC2)
+## "gcp"     (Google Cloud Provider)
+## "azure"   (Azure)
+## "alibaba" (Alibaba)
+## "none"    (will not query any cloud metadata endpoint)
+## ""        (default: will query all cloud metadata endpoints)
+#
+# cloud_provider: ""
+
 ## @param proxy - custom object - optional
 ## If you need a proxy to connect to the Internet, provide it here (default:
 ## disabled). Refer to https://docs.datadoghq.com/agent/proxy/ to understand how to use these settings.
