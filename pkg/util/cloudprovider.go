@@ -41,7 +41,7 @@ func DetectCloudProvider() {
 		log.Infof("cloud_provider is set to \"none\", skipping cloud provider detection")
 	} else {
 		for _, cloudDetector := range detectors {
-			if cloudProvider+".CloudProviderName" == cloudDetector.name || cloudProvider == "" {
+			if cloudProvider == "" || cloudProvider == cloudDetector.name {
 				if cloudDetector.callback() {
 					inventories.SetAgentMetadata(inventories.CloudProviderMetatadaName, cloudDetector.name)
 					log.Infof("Cloud provider %s detected", cloudDetector.name)
