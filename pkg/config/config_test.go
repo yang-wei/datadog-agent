@@ -41,6 +41,7 @@ func TestDefaults(t *testing.T) {
 	assert.False(t, config.IsSet("dd_url"))
 	assert.Equal(t, "", config.GetString("site"))
 	assert.Equal(t, "", config.GetString("dd_url"))
+	assert.Equal(t, "", config.GetString("cloud_provider"))
 }
 
 func TestDefaultSite(t *testing.T) {

@@ -128,6 +128,7 @@ func initConfig(config Config) {
 	config.BindEnv("site")
 	config.BindEnv("dd_url")
 	config.BindEnvAndSetDefault("app_key", "")
+	config.BindEnvAndSetDefault("cloud_provider", "")
 	config.SetDefault("proxy", nil)
 	config.BindEnvAndSetDefault("skip_ssl_validation", false)
 	config.BindEnvAndSetDefault("hostname", "")
