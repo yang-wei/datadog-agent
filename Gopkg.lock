@@ -2,6 +2,27 @@
 
 
 [[projects]]
+  digest = "1:517dd576766bef2c46a4d728f3a466efe7f8cc1fecca176ad3ad41f84aec59bc"
+  name = "code.cloudfoundry.org/garden"
+  packages = [
+    ".",
+    "client",
+    "client/connection",
+    "routes",
+    "transport",
+  ]
+  pruneopts = ""
+  revision = "6c6c7943f9d3509d9eb45fd9e95c70affd12f6a6"
+
+[[projects]]
+  digest = "1:673cab9bb26a0011fbc34255ec4a6695ecb31cf6338860263959c415e3aa3dd1"
+  name = "code.cloudfoundry.org/lager"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b152b7147a2a0154109a5194fcc7f4a933283abb"
+  version = "v2.0.0"
+
+[[projects]]
   digest = "1:9ab7542bc72ee9005bbd3f991c3c428979455ba790ab856bbc36017a69183d55"
   name = "github.com/DataDog/agent-payload"
   packages = [
@@ -232,6 +253,14 @@
   pruneopts = ""
   revision = "37c8de3658fcb183f997c4e13e8337516ab753e6"
   version = "v1.0.1"
+
+[[projects]]
+  branch = "master"
+  digest = "1:da54e55f2f63347514121c0d7b53631970367b26281d057ec66925c57324b8f1"
+  name = "github.com/bmizerany/pat"
+  packages = ["."]
+  pruneopts = ""
+  revision = "6226ea591a40176dd3ff9cd8eff81ed6ca721a00"
 
 [[projects]]
   digest = "1:8561fc011218ed9821f6d73057154e692cdfd0f37e929ef6c4a574b6299136cb"
@@ -1288,6 +1317,14 @@
   revision = "d98352740cb2c55f81556b63d4a1ec64c5a319c2"
 
 [[projects]]
+  digest = "1:5eb69e54b6af5896a81dc45c5125eebe4b37a70df5e121e41d5a879a0c740234"
+  name = "github.com/tedsuo/rata"
+  packages = ["."]
+  pruneopts = ""
+  revision = "0649c23705dfb45a9693b668c4fc1c0666f485d9"
+  version = "v1.0.0"
+
+[[projects]]
   digest = "1:23ed2a28cfc147d46f7fbf4d85f83f6d659e15eac4ad1c16c4d32b19da5bd2fa"
   name = "github.com/tinylib/msgp"
   packages = ["msgp"]
@@ -1332,7 +1369,6 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:0b30de1a6957125af05f8dbe7dfe8843fb4aa0d87d803d3ebd83f39aed113c9a"
   name = "github.com/vishvananda/netns"
   packages = ["."]
@@ -2015,7 +2051,7 @@
   revision = "b3a7cee44a305be0a69e1b9ac03018307287e1b0"
 
 [[projects]]
-  digest = "1:f27698f7ae7864893ebcfb843e44d821263ac1dcf0ba1d5c2353f9d319a2f28d"
+  digest = "0:"
   name = "k8s.io/kubernetes"
   packages = [
     "pkg/kubelet/remote/fake",
@@ -2091,6 +2127,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "code.cloudfoundry.org/garden",
+    "code.cloudfoundry.org/garden/client",
+    "code.cloudfoundry.org/garden/client/connection",
     "github.com/DataDog/agent-payload/gogen",
     "github.com/DataDog/agent-payload/process",
     "github.com/DataDog/datadog-go/statsd",
