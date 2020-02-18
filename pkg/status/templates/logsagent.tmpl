@@ -10,6 +10,11 @@ Logs Agent
   Logs Agent is not running
 {{- end }}
 
+{{- if eq .use_http false }}
+
+    You are currently sending Logs to Datadog through TCP. To benefit from increased reliability and better network performances, we strongly encourage to switch over HTTPS, https://docs.datadoghq.com/agent/logs/?tab=compressionenabled#send-logs-over-https, which will become the default protocol in the Agent future version.
+{{ end }}
+
 {{- if .endpoints }}
 
   {{- range $endpoint := .endpoints }}
