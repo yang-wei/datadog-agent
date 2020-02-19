@@ -14,7 +14,6 @@ import (
 
 	"github.com/DataDog/datadog-agent/pkg/autodiscovery/integration"
 	"github.com/DataDog/datadog-agent/pkg/util/cloudfoundry"
-	"github.com/DataDog/datadog-agent/pkg/util/log"
 )
 
 const (
@@ -33,7 +32,6 @@ type CloudFoundryListener struct {
 
 type CloudFoundryService struct {
 	adIdentifier   cloudfoundry.ADIdentifier
-	checkNames     []string
 	containerIPs   map[string]string
 	containerPorts []ContainerPort
 	creationTime   integration.CreationTime
@@ -48,7 +46,10 @@ func init() {
 
 // NewCloudFoundryListener creates a CloudFoundryListener
 func NewCloudFoundryListener() (ServiceListener, error) {
-	bbsCache, _ := cloudfoundry.GetGlobalBBSCache()
+	bbsCache, err := cloudfoundry.GetGlobalBBSCache()
+	if err != nil {
+		return nil, err
+	}
 	return &CloudFoundryListener{
 		services: map[string]Service{},
 		stop:     make(chan bool),
@@ -77,14 +78,6 @@ func (l *CloudFoundryListener) Listen(newSvc chan<- Service, delSvc chan<- Servi
 }
 
 func (l *CloudFoundryListener) refreshServices(firstRun bool) {
-	if l.bbsCache == nil {
-		var err error
-		l.bbsCache, err = cloudfoundry.GetGlobalBBSCache()
-		if err != nil {
-			log.Warnf("Can't refresh services list: %s", err.Error())
-			return
-		}
-	}
 	l.bbsCache.RLock()
 	defer l.bbsCache.RUnlock()
 
@@ -136,7 +129,6 @@ func (l *CloudFoundryListener) createService(adId cloudfoundry.ADIdentifier, fir
 		// non-container service
 		svc = &CloudFoundryService{
 			adIdentifier:   adId,
-			checkNames:     []string{},          // TODO
 			containerIPs:   map[string]string{}, // TODO
 			containerPorts: []ContainerPort{},   // TODO
 			creationTime:   crTime,
@@ -155,7 +147,6 @@ func (l *CloudFoundryListener) createService(adId cloudfoundry.ADIdentifier, fir
 		}
 		svc = &CloudFoundryService{
 			adIdentifier:   adId,
-			checkNames:     []string{}, // TODO
 			containerIPs:   ips,
 			containerPorts: ports,
 			creationTime:   crTime,
@@ -239,7 +230,6 @@ func (s *CloudFoundryService) IsReady() bool {
 }
 
 // GetCheckNames always returns empty slice on CF
-// TODO: do we need to implement this?
 func (s *CloudFoundryService) GetCheckNames() []string {
-	return s.checkNames
+	return []string{}
 }
