@@ -210,6 +210,9 @@ func (c *SystemdCheck) connect(sender aggregator.Sender) (*dbus.Conn, error) {
 
 func (c *SystemdCheck) submitSystemdState(sender aggregator.Sender, conn *dbus.Conn) {
 	systemStateProp, err := c.stats.SystemState(conn)
+	// Expected to fail for Systemd version <212
+	// Source: https://github.com/systemd/systemd/blob/master/NEWS#L7292-L7300
+	// TODO: Instead of logging debug, replace with condition based on Systemd version.
 	if err != nil {
 		log.Debugf("err calling SystemState: %v", err)
 	} else {
