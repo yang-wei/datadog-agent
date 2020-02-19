@@ -269,11 +269,11 @@ func (c *SystemdCheck) getSystemBusSocketConnection() (*dbus.Conn, error) {
 func (c *SystemdCheck) submitVersion(conn *dbus.Conn) {
 	version, err := c.stats.GetVersion(conn)
 	if err != nil {
-		log.Debugf("Error collection version from the systemd socket: %v", err)
+		log.Debugf("Error collection version from the systemd: %v", err)
 		return
 	}
-	checkId := string(c.ID())
-	inventories.SetCheckMetadata(checkId, "version.raw", version)
+	checkID := string(c.ID())
+	inventories.SetCheckMetadata(checkID, "version.raw", version)
 	log.Debugf("Submitted version %v for checkID %v", version, checkId)
 }
 
