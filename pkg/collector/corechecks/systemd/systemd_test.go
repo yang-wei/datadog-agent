@@ -233,24 +233,26 @@ func TestDbusConnectionErr(t *testing.T) {
 	mockSender.AssertCalled(t, "ServiceCheck", canConnectServiceCheck, metrics.ServiceCheckCritical, "", []string(nil), expectedErrorMsg)
 
 }
-//
-//func TestSystemStateCallErr(t *testing.T) {
-//	stats := &mockSystemdStats{}
-//	stats.On("SystemBusSocketConnection").Return(&dbus.Conn{}, nil)
-//	stats.On("SystemState", mock.Anything).Return((*dbus.Property)(nil), fmt.Errorf("some error"))
-//
-//	check := SystemdCheck{stats: stats}
-//	check.Configure([]byte(``), []byte(``), "test")
-//
-//	mockSender := mocksender.NewMockSender(check.ID()) // required to initiate aggregator
-//	mockSender.On("ServiceCheck", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
-//
-//	err := check.Run()
-//
-//	expectedErrorMsg := "err calling SystemState: some error"
-//	assert.EqualError(t, err, expectedErrorMsg)
-//	mockSender.AssertCalled(t, "ServiceCheck", canConnectServiceCheck, metrics.ServiceCheckCritical, "", []string(nil), expectedErrorMsg)
-//}
+
+func TestSystemStateCallFailGracefully(t *testing.T) {
+	stats := &mockSystemdStats{}
+	stats.On("SystemBusSocketConnection").Return(&dbus.Conn{}, nil)
+	stats.On("SystemState", mock.Anything).Return((*dbus.Property)(nil), fmt.Errorf("some error"))
+	stats.On("ListUnits", mock.Anything).Return([]dbus.UnitStatus{}, nil)
+
+	check := SystemdCheck{stats: stats}
+	check.Configure([]byte(``), []byte(``), "test")
+
+	mockSender := mocksender.NewMockSender(check.ID()) // required to initiate aggregator
+	mockSender.On("Gauge", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
+	mockSender.On("ServiceCheck", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
+	mockSender.On("Commit").Return()
+
+	err := check.Run()
+	assert.Nil(t, err)
+
+	mockSender.AssertNotCalled(t, "ServiceCheck")
+}
 
 func TestListUnitErr(t *testing.T) {
 	stats := createDefaultMockSystemdStats()

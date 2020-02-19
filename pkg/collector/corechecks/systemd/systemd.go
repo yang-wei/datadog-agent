@@ -186,6 +186,8 @@ func (c *SystemdCheck) Run() error {
 	}
 	defer c.stats.CloseConn(conn)
 
+	c.submitSystemdState(sender, conn)
+
 	err = c.submitMetrics(sender, conn)
 	if err != nil {
 		return err
@@ -196,14 +198,17 @@ func (c *SystemdCheck) Run() error {
 
 func (c *SystemdCheck) connect(sender aggregator.Sender) (*dbus.Conn, error) {
 	conn, err := c.getDbusConnection()
-
 	if err != nil {
 		newErr := fmt.Errorf("cannot create a connection: %v", err)
 		sender.ServiceCheck(canConnectServiceCheck, metrics.ServiceCheckCritical, "", nil, newErr.Error())
 		return nil, newErr
+	} else {
+		sender.ServiceCheck(canConnectServiceCheck, metrics.ServiceCheckOK, "", nil, "")
+		return conn, nil
 	}
-	sender.ServiceCheck(canConnectServiceCheck, metrics.ServiceCheckOK, "", nil, "")
+}
 
+func (c *SystemdCheck) submitSystemdState(sender aggregator.Sender, conn *dbus.Conn) {
 	systemStateProp, err := c.stats.SystemState(conn)
 	if err != nil {
 		log.Debugf("err calling SystemState: %v", err)
@@ -217,10 +222,7 @@ func (c *SystemdCheck) connect(sender aggregator.Sender) (*dbus.Conn, error) {
 			}
 		}
 		sender.ServiceCheck(systemStateServiceCheck, serviceCheckStatus, "", nil, fmt.Sprintf("Systemd status is %v", systemStateProp.Value))
-
 	}
-
-	return conn, nil
 }
 
 func (c *SystemdCheck) getDbusConnection() (*dbus.Conn, error) {
