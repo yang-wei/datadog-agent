@@ -30,7 +30,7 @@ api_key:
 ## "GCP"     (Google Cloud Provider)
 ## "Azure"   (Azure)
 ## "Alibaba" (Alibaba)
-## "none"    (will not query any cloud metadata endpoint, using this setting on a cloud host may result in duplication)
+## "none"    (does not query any cloud metadata endpoint, using this setting on a cloud host may result in duplication)
 ## ""        (default: will query all cloud metadata endpoints)
 #
 # cloud_provider: ""
