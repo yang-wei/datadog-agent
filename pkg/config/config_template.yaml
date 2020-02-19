@@ -22,7 +22,7 @@ api_key:
 # dd_url: https://app.datadoghq.com
 
 ## @param cloud_provider - string - optional - default: <empty>
-## The cloud provider endpoint the agent should check for metadata.  Do not use "none" if this the corresponding
+## The cloud provider endpoint the Agent should check for metadata.  Do not use "none" if the corresponding
 ## scraper integration is enabled in your account (ex. this host is an EC2, and the AWS integrations provides metrics to 
 ## your account about this host).  This may result in duplicated hosts.
 ## Possible values are:
