@@ -54,6 +54,7 @@ type metricConfigItem struct {
 }
 
 // metricConfigs contains metricConfigItem(s) grouped by unit type.
+// TODO: Instead of using `optional`, use SystemD version to decide if a attribute/metric should be processed or not.
 var metricConfigs = map[string][]metricConfigItem{
 	typeService: {
 		{
@@ -211,7 +212,7 @@ func (c *SystemdCheck) connect(sender aggregator.Sender) (*dbus.Conn, error) {
 func (c *SystemdCheck) submitSystemdState(sender aggregator.Sender, conn *dbus.Conn) {
 	systemStateProp, err := c.stats.SystemState(conn)
 	// Expected to fail for Systemd version <212
-	// Source: https://github.com/systemd/systemd/blob/master/NEWS#L7292-L7300
+	// Source: https://github.com/systemd/systemd/blob/d4ffda38716d33dbc17faaa12034ccb77d0ed68b/NEWS#L7292-L7300
 	// TODO: Instead of logging debug, replace with condition based on Systemd version.
 	if err != nil {
 		log.Debugf("err calling SystemState: %v", err)
